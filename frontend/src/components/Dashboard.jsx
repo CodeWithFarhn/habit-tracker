@@ -99,7 +99,8 @@ const Dashboard = () => {
             {/* Main Content */}
             <div className="p-8">
                 {/* Stats Grid - 4 Cards with different colors */}
-                <div className="grid grid-cols-4 gap-6 mb-8">
+                {/* Mobile: 1 column, Tablet: 2 columns, Desktop: 4 columns */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <StatsCard
                         label="Completion Rate"
                         value={stats.completionRate}
@@ -149,7 +150,8 @@ const Dashboard = () => {
                 </div>
 
                 {/* Charts Grid */}
-                <div className="grid grid-cols-2 gap-6">
+                {/* Mobile: 1 column, Desktop: 2 columns */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Category Distribution */}
                     <div className="bg-slate-50 rounded-lg border border-slate-200 p-6 hover:shadow-md transition-shadow">
                         <h2 className="text-lg font-bold text-slate-900 mb-6">Category Distribution</h2>
@@ -167,14 +169,14 @@ const Dashboard = () => {
                         <p className="text-slate-700 text-sm mb-6">
                             Start building better habits today. Consistency is key to long-term success.
                         </p>
-                        <div className="flex gap-4">
-                            <button className="flex-1 bg-white text-blue-600 font-medium py-2 px-4 rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors duration-200">
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <button className="sm:flex-1 bg-white text-blue-600 font-medium py-2 px-4 rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors duration-200">
                                 <div className="text-center">
                                     <p className="font-semibold text-sm">Add Habit</p>
                                     <p className="text-xs text-slate-500 mt-1">Track daily routines</p>
                                 </div>
                             </button>
-                            <button className="flex-1 bg-white text-blue-600 font-medium py-2 px-4 rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors duration-200">
+                            <button className="sm:flex-1 bg-white text-blue-600 font-medium py-2 px-4 rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors duration-200">
                                 <div className="text-center">
                                     <p className="font-semibold text-sm">Add Task</p>
                                     <p className="text-xs text-slate-500 mt-1">Plan your day</p>

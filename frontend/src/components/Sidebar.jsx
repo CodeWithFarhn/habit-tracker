@@ -119,10 +119,9 @@ const Sidebar = ({ selectedTaskId, onSelectTask, onOpenTaskForm }) => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-white">
-
-            {/* Header */}
-            <div className="px-8 py-4 border-b border-slate-200">
+        <div className="flex flex-col h-full bg-white w-full md:w-[340px] border-r border-slate-200 shadow-sm">
+            {/* Header - hidden on mobile, shown on desktop */}
+            <div className="hidden md:block px-8 py-4 border-b border-slate-200">
                 <div className="flex items-center gap-2">
                     <div className="w-10 h-10 bg-blue-600 rounded flex items-center justify-center text-white text-sm font-bold">
                         Z
@@ -131,8 +130,8 @@ const Sidebar = ({ selectedTaskId, onSelectTask, onOpenTaskForm }) => {
                 </div>
             </div>
 
-            {/* Overview Section */}
-            <div className="p-4 border-b border-slate-200 space-y-4">
+            {/* Overview Section - adjust padding for mobile */}
+            <div className="pt-4 md:pt-6 px-4 pb-4 border-b border-slate-200 space-y-4">
 
                 {/* Overview Header */}
                 <div className="flex items-center justify-between">
@@ -140,7 +139,7 @@ const Sidebar = ({ selectedTaskId, onSelectTask, onOpenTaskForm }) => {
                         onClick={() => window.dispatchEvent(new CustomEvent('navigateToDashboard'))}
                         className="flex items-center gap-2 cursor-pointer hover:text-blue-600 transition-colors duration-200 group flex-1"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-600 group-hover:text-blue-600 transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-600 group-hover:text-blue-600 transition-colors duration-200">
                             <rect width="7" height="9" x="3" y="3" rx="1"></rect>
                             <rect width="7" height="5" x="14" y="3" rx="1"></rect>
                             <rect width="7" height="9" x="14" y="12" rx="1"></rect>
@@ -149,7 +148,7 @@ const Sidebar = ({ selectedTaskId, onSelectTask, onOpenTaskForm }) => {
                         <h6 className="text-base font-semibold text-slate-900 group-hover:text-blue-600 transition-colors duration-200">Overview</h6>
                     </button>
                     <button
-                        className="inline-flex items-center justify-center gap-2 px-3 py-0.5 bg-blue-600 text-white rounded-md font-medium text-xs hover:bg-blue-700 active:bg-blue-800 transition-all duration-200 shadow-sm hover:shadow-md"
+                        className="inline-flex items-center justify-center gap-2 px-3.5 py-1 bg-blue-600 text-white rounded-md font-medium text-xs hover:bg-blue-700 active:bg-blue-800 transition-all duration-200 shadow-sm hover:shadow-md"
                         onClick={onOpenTaskForm}
                     >
                         <span>+</span>
@@ -173,7 +172,7 @@ const Sidebar = ({ selectedTaskId, onSelectTask, onOpenTaskForm }) => {
                             className="absolute right-2 top-2.5 text-gray-400 hover:text-gray-600 transition-colors duration-200"
                             title="Clear search"
                         >
-                            âœ•
+                            ×
                         </button>
                     )}
                 </div>
@@ -208,7 +207,7 @@ const Sidebar = ({ selectedTaskId, onSelectTask, onOpenTaskForm }) => {
                 {filteredTasks.length === 0 ? (
                     <div className="p-4 text-center text-gray-400 text-xs">
                         <div className="mb-2">
-                            ðŸ“­
+                            📋
                         </div>
                         No tasks found
                     </div>
