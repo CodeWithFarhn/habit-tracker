@@ -11,6 +11,7 @@ body,
   padding: 0;
 }
 
+/* Global box-sizing */
 * {
   box-sizing: border-box;
 }
