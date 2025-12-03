@@ -64,13 +64,14 @@ The application follows a backend-driven architecture where frontend actions tri
 ### Backend (Node.js + Express + MongoDB)
 
 **Folder Structure**
-backend/src/
-├── config/          # Database configuration
-├── models/          # MongoDB schemas
-├── routes/          # API route definitions
-├── controllers/     # Business logic
-├── middleware/      # Custom middleware
-└── server.js        # Express application
+backend/
+  src/
+    ├── config/          # Database configuration
+    ├── models/          # MongoDB schemas
+    ├── routes/          # API route definitions
+    ├── controllers/     # Business logic
+    ├── middleware/      # Custom middleware
+    └── server.js        # Express application
 
 **API Endpoints**
 - Tasks: Create, Read, Update, Delete, Mark Complete
