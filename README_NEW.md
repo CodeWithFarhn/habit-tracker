@@ -64,6 +64,7 @@ The application follows a backend-driven architecture where frontend actions tri
 ### Backend (Node.js + Express + MongoDB)
 
 **Folder Structure**
+```
 backend/src/
 ├── config/          # Database configuration
 ├── models/          # MongoDB schemas
@@ -71,6 +72,7 @@ backend/src/
 ├── controllers/     # Business logic
 ├── middleware/      # Custom middleware
 └── server.js        # Express application
+```
 
 **API Endpoints**
 - Tasks: Create, Read, Update, Delete, Mark Complete
@@ -81,6 +83,7 @@ backend/src/
 
 ### Frontend
 
+```
 frontend/src/
 ├── components/
 │   ├── Dashboard.jsx
@@ -93,11 +96,12 @@ frontend/src/
 │   └── api.js
 ├── App.jsx
 ├── main.jsx
-└── index.html
 └── index.css
+```
 
 ### Backend
 
+```
 backend/src/
 ├── config/
 │   └── database.js
@@ -117,6 +121,7 @@ backend/src/
 │   ├── errorHandler.js
 │   └── validation.js
 └── server.js
+```
 
 ## Tech Stack
 
@@ -148,39 +153,47 @@ backend/src/
 - Git
 
 ### Frontend Setup
-bash
+
+```bash
 cd frontend
 npm install
 npm run dev
+```
 
 Frontend will run on `http://localhost:5173`
 
 ### Backend Setup
-bash
+
+```bash
 cd backend
 npm install
 cp .env.example .env
 npm run dev
+```
 
 Backend will run on `http://localhost:5000`
 
 Configure `.env` with your MongoDB connection string:
+```
 MONGODB_URI=mongodb://localhost:27017/zentask
 PORT=5000
+```
 
 ## API Endpoints
 
 ### Tasks
 
+```
 GET /api/tasks              # Get all tasks
 GET /api/tasks/:id          # Get single task
 POST /api/tasks             # Create task
 PATCH /api/tasks/:id        # Update task
 PATCH /api/tasks/:id/complete   # Mark as completed
 DELETE /api/tasks/:id       # Delete task
+```
 
 **POST /api/tasks Request Body:**
-
+```json
 {
   "title": "Complete project proposal",
   "description": "Finish the Q4 project proposal",
@@ -188,9 +201,10 @@ DELETE /api/tasks/:id       # Delete task
   "priority": "high",
   "dueDate": "2025-12-15T00:00:00.000Z"
 }
+```
 
 **Response:**
-
+```json
 {
   "success": true,
   "data": {
@@ -204,25 +218,27 @@ DELETE /api/tasks/:id       # Delete task
     "updatedAt": "2025-12-03T12:00:00.000Z"
   }
 }
-
+```
 
 ### Habits
 
+```
 GET /api/habits             # Get all habits
 GET /api/habits/:id         # Get single habit
 POST /api/habits            # Create habit
 PATCH /api/habits/:id       # Update habit
 PATCH /api/habits/:id/log   # Log habit completion
 DELETE /api/habits/:id      # Delete habit
-
+```
 
 ### Dashboard Statistics
 
+```
 GET /api/stats/dashboard    # Get dashboard statistics
-
+```
 
 **Response:**
-
+```json
 {
   "success": true,
   "data": {
@@ -238,6 +254,7 @@ GET /api/stats/dashboard    # Get dashboard statistics
     }
   }
 }
+```
 
 ## Next Steps
 

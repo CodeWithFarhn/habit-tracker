@@ -159,6 +159,11 @@ const Dashboard = () => {
                             <div className="text-center">
                                 <div className="text-slate-400 text-sm mb-2">No data available</div>
                                 <p className="text-xs text-slate-500">Chart placeholder for category breakdown</p>
+                                <ul className="mt-3 text-xs text-slate-600 space-y-1">
+                                    <li>Work: 2</li>
+                                    <li>Health: 2</li>
+                                    <li>Personal: 1</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
