@@ -1,196 +1,167 @@
 import React, { useState } from 'react';
+import { Card, Row, Col, Container, Button } from 'react-bootstrap';
+import { Check2Square, ListUl, JournalCheck, LightningCharge } from 'react-bootstrap-icons';
 
-// Calculate dates OUTSIDE component (pure)
-const NOW = Date.now();
-const TOMORROW_2_DAYS = new Date(NOW + 2 * 24 * 60 * 60 * 1000).toISOString();
-const TODAY = new Date(NOW).toISOString();
-const IN_5_DAYS = new Date(NOW + 5 * 24 * 60 * 60 * 1000).toISOString();
-
-// Sample data OUTSIDE component (pure)
-const SAMPLE_TASKS = [
-    {
-        _id: '1',
-        title: 'Complete project proposal',
-        description: 'Finish the Q4 project proposal',
-        category: 'work',
-        priority: 'high',
-        status: 'pending',
-        dueDate: TOMORROW_2_DAYS
-    },
-    {
-        _id: '2',
-        title: 'Morning workout',
-        description: 'Daily exercise routine',
-        category: 'health',
-        priority: 'medium',
-        status: 'completed',
-        frequency: 'daily',
-        dueDate: TODAY
-    },
-    {
-        _id: '3',
-        title: 'Read documentation',
-        description: 'Study React patterns',
-        category: 'personal',
-        priority: 'low',
-        status: 'pending',
-        dueDate: IN_5_DAYS
-    }
-];
-
-// Calculate stats OUTSIDE component (pure)
-const calculateStats = () => {
-    const totalTasks = SAMPLE_TASKS.length;
-    const completedTasks = SAMPLE_TASKS.filter(t => t.status === 'completed').length;
-    const pendingTasks = SAMPLE_TASKS.filter(t => t.status === 'pending').length;
-    const activeHabits = SAMPLE_TASKS.filter(t => t.frequency === 'daily').length;
+// Calculate stats from PROPS now
+const getStats = (tasks) => {
+    const totalTasks = tasks.length;
+    const completedTasks = tasks.filter(t => t.status === 'completed').length;
+    const pendingTasks = tasks.filter(t => t.status === 'pending').length;
+    const activeHabits = tasks.filter(t => t.frequency && t.status !== 'completed').length;
+    const habits = tasks.filter(t => t.frequency).length;
 
     return {
         completionRate: totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0,
         pendingTasks: pendingTasks,
-        activeHabits: activeHabits,
-        bestStreak: 7
+        activeHabits: habits,
+        bestStreak: 7 // Placeholder logic remains
     };
 };
 
-// Stats Card Component OUTSIDE (reusable, pure)
-const StatsCard = ({ label, value, unit = '', icon: IconComponent, description, color = 'slate' }) => {
-    const colorClasses = {
-        slate: { text: 'text-slate-700', bg: 'bg-slate-50', border: 'border-slate-200' },
-        blue: { text: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200' },
-        orange: { text: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-200' },
-        green: { text: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200' },
-        purple: { text: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-200' }
-    };
-
-    const colors = colorClasses[color];
+const StatsCard = ({ label, value, unit = '', icon: IconComponent, description, color = 'secondary' }) => {
+    const textClass = `text-${color}`;
 
     return (
-        <div className={`${colors.bg} rounded-lg border ${colors.border} p-6 hover:shadow-md transition-shadow`}>
-            <div className="flex items-start justify-between mb-3">
-                <div>
-                    <p className={`${colors.text} text-sm font-medium mb-1`}>{label}</p>
-                    <div className="flex items-baseline gap-1">
-                        <span className={`text-3xl font-bold ${colors.text}`}>{value}</span>
-                        {unit && <span className="text-slate-500 text-sm">{unit}</span>}
+        <Card className="h-100 border-0 shadow-sm custom-card-hover">
+            <Card.Body>
+                <div className="d-flex align-items-start justify-content-between mb-3">
+                    <div>
+                        <p className={`fw-medium mb-1 ${textClass}`} style={{ fontSize: '0.875rem' }}>{label}</p>
+                        <div className="d-flex align-items-baseline gap-1">
+                            <span className={`display-6 fw-bold ${textClass}`} style={{ fontSize: '2rem' }}>{value}</span>
+                            {unit && <span className="text-muted small">{unit}</span>}
+                        </div>
+                    </div>
+                    <div className={`${textClass} fs-3`}>
+                        {IconComponent}
                     </div>
                 </div>
-                <div className={`text-2xl ${colors.text}`}>
-                    {IconComponent}
-                </div>
-            </div>
-            <p className="text-xs text-slate-500">{description}</p>
-        </div>
+                <p className="text-muted small mb-0">{description}</p>
+            </Card.Body>
+        </Card>
     );
 };
 
-const Dashboard = () => {
-    // Initialize state with calculated stats
-    const [stats] = useState(calculateStats());
+const Dashboard = ({ tasks, onSelectTask, onOpenTaskForm }) => {
+    const stats = getStats(tasks);
 
     return (
-        <div className="flex-1 bg-white overflow-y-auto">
+        <div className="h-100 overflow-auto bg-white">
             {/* Header */}
-            <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400 border-b border-blue-300 px-8 py-6 text-white shadow-sm">
-                <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
-                <p className="text-blue-100 text-base">Your productivity overview and stats.</p>
+            <div className="bg-primary bg-gradient text-white p-5 mb-4 shadow-sm">
+                <Container fluid>
+                    <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                        <div>
+                            <h1 className="fw-bold display-5 mb-2">Good {new Date().getHours() < 12 ? 'Morning' : new Date().getHours() < 18 ? 'Afternoon' : 'Evening'}, User!</h1>
+                            <p className="lead mb-0 text-white opacity-75">
+                                Here's your overview for {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.
+                            </p>
+                        </div>
+                        {/* Quick Add button removed as requested */}
+                    </div>
+                </Container>
             </div>
 
             {/* Main Content */}
-            <div className="p-8">
-                {/* Stats Grid - 4 Cards with different colors */}
-                {/* Mobile: 1 column, Tablet: 2 columns, Desktop: 4 columns */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <StatsCard
-                        label="Completion Rate"
-                        value={stats.completionRate}
-                        unit="%"
-                        icon={
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-                                <path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path>
-                            </svg>
-                        }
-                        description={`${Math.floor(stats.completionRate / 10)} of ${Math.ceil(100 / 10)} items completed`}
-                        color="slate"
-                    />
-                    <StatsCard
-                        label="Pending Tasks"
-                        value={stats.pendingTasks}
-                        icon={
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-                                <circle cx="12" cy="12" r="10"></circle>
-                            </svg>
-                        }
-                        description="One-time tasks remaining"
-                        color="blue"
-                    />
-                    <StatsCard
-                        label="Active Habits"
-                        value={stats.activeHabits}
-                        icon={
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-                                <path d="M12 5v14M5 12h14"></path>
-                            </svg>
-                        }
-                        description="Recurring habits being tracked"
-                        color="green"
-                    />
-                    <StatsCard
-                        label="Best Streak"
-                        value={stats.bestStreak}
-                        unit="Days"
-                        icon={
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-                                <path d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                        }
-                        description="Keep the momentum going!"
-                        color="orange"
-                    />
-                </div>
+            <Container fluid className="p-4">
+                {/* Stats Grid */}
+                <Row className="g-4 mb-4">
+                    <Col sm={6} lg={3}>
+                        <StatsCard
+                            label="Completion Rate"
+                            value={stats.completionRate}
+                            unit="%"
+                            icon={<Check2Square />}
+                            description={`${Math.floor(stats.completionRate / 10)} of ${Math.ceil(100 / 10)} items completed`}
+                            color="primary"
+                        />
+                    </Col>
+                    <Col sm={6} lg={3}>
+                        <StatsCard
+                            label="Pending Tasks"
+                            value={stats.pendingTasks}
+                            icon={<ListUl />}
+                            description="One-time tasks remaining"
+                            color="info"
+                        />
+                    </Col>
+                    <Col sm={6} lg={3}>
+                        <StatsCard
+                            label="Active Habits"
+                            value={stats.activeHabits}
+                            icon={<JournalCheck />}
+                            description="Recurring habits being tracked"
+                            color="success"
+                        />
+                    </Col>
+                    <Col sm={6} lg={3}>
+                        <StatsCard
+                            label="Best Streak"
+                            value={stats.bestStreak}
+                            unit="Days"
+                            icon={<LightningCharge />}
+                            description="Keep the momentum going!"
+                            color="warning"
+                        />
+                    </Col>
+                </Row>
 
-                {/* Charts Grid */}
-                {/* Mobile: 1 column, Desktop: 2 columns */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Row className="g-4">
                     {/* Category Distribution */}
-                    <div className="bg-slate-50 rounded-lg border border-slate-200 p-6 hover:shadow-md transition-shadow">
-                        <h2 className="text-lg font-bold text-slate-900 mb-6">Category Distribution</h2>
-                        <div className="flex items-center justify-center h-40">
-                            <div className="text-center">
-                                <div className="text-slate-400 text-sm mb-2">No data available</div>
-                                <p className="text-xs text-slate-500">Chart placeholder for category breakdown</p>
-                                <ul className="mt-3 text-xs text-slate-600 space-y-1">
-                                    <li>Work: 2</li>
-                                    <li>Health: 2</li>
-                                    <li>Personal: 1</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                    <Col lg={6}>
+                        <Card className="h-100 border shadow-sm custom-card-hover">
+                            <Card.Body className="p-4">
+                                <h5 className="fw-bold mb-4 text-dark">Category Distribution</h5>
+                                <div className="d-flex align-items-center justify-content-center" style={{ height: '160px' }}>
+                                    <div className="text-center text-muted">
+                                        <div className="mb-2">No data available</div>
+                                        <small className="text-secondary opacity-75">Chart placeholder for category breakdown</small>
+                                        <ul className="list-unstyled mt-3 small text-secondary">
+                                            <li>Work: {tasks.filter(t => t.category === 'work').length}</li>
+                                            <li>Health: {tasks.filter(t => t.category === 'health').length}</li>
+                                            <li>Personal: {tasks.filter(t => t.category === 'personal').length}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
 
                     {/* Quick Actions */}
-                    <div className="bg-blue-50 rounded-lg border border-blue-200 p-6 hover:shadow-md transition-shadow">
-                        <h2 className="text-lg font-bold text-slate-900 mb-4">Quick Actions</h2>
-                        <p className="text-slate-700 text-sm mb-6">
-                            Start building better habits today. Consistency is key to long-term success.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <button className="sm:flex-1 bg-white text-blue-600 font-medium py-2 px-4 rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors duration-200">
-                                <div className="text-center">
-                                    <p className="font-semibold text-sm">Add Habit</p>
-                                    <p className="text-xs text-slate-500 mt-1">Track daily routines</p>
+                    <Col lg={6}>
+                        <Card className="h-100 border border-primary-subtle bg-primary-subtle shadow-sm custom-card-hover">
+                            <Card.Body className="p-4">
+                                <h5 className="fw-bold mb-3 text-dark">Quick Actions</h5>
+                                <p className="text-secondary small mb-4">
+                                    Start building better habits today. Consistency is key to long-term success.
+                                </p>
+                                <div className="d-flex flex-column flex-sm-row gap-3">
+                                    <Button
+                                        variant="light"
+                                        className="flex-fill border py-2 text-primary fw-medium shadow-sm hover-shadow"
+                                        onClick={() => onOpenTaskForm('habit')}
+                                    >
+                                        <div className="text-center">
+                                            <div className="fw-bold small">Add Habit</div>
+                                            <small className="text-muted" style={{ fontSize: '0.75rem' }}>Track daily routines</small>
+                                        </div>
+                                    </Button>
+                                    <Button
+                                        variant="light"
+                                        className="flex-fill border py-2 text-primary fw-medium shadow-sm hover-shadow"
+                                        onClick={() => onOpenTaskForm('task')}
+                                    >
+                                        <div className="text-center">
+                                            <div className="fw-bold small">Add Task</div>
+                                            <small className="text-muted" style={{ fontSize: '0.75rem' }}>Plan your day</small>
+                                        </div>
+                                    </Button>
                                 </div>
-                            </button>
-                            <button className="sm:flex-1 bg-white text-blue-600 font-medium py-2 px-4 rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors duration-200">
-                                <div className="text-center">
-                                    <p className="font-semibold text-sm">Add Task</p>
-                                    <p className="text-xs text-slate-500 mt-1">Plan your day</p>
-                                </div>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
         </div>
     );
 };

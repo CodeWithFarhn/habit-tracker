@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
+import { Container, Button, Offcanvas } from 'react-bootstrap';
+import { List, LayoutSidebar, PlusLg } from 'react-bootstrap-icons';
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./components/Dashboard";
 import TaskDetail from "./components/TaskDetail";
 import TaskForm from "./components/TaskForm";
+import { SAMPLE_TASKS } from "./data/mockData";
 
 function App() {
+  const [tasks, setTasks] = useState(SAMPLE_TASKS);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
-  const [showTaskForm, setShowTaskForm] = useState(false);
+  const [taskFormConfig, setTaskFormConfig] = useState(null); // { show: true, type: 'task'/'habit' }
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -31,116 +35,104 @@ function App() {
     setSelectedTaskId(null);
   };
 
-  const handleCreateTask = (taskData) => {
-    console.log("New task created:", taskData);
-    // Send to API here
-    setShowTaskForm(false);
-    // Refresh tasks in sidebar if wired to real data
+  const handleCreateTask = (newTask) => {
+    console.log("New task created:", newTask);
+    const taskWithId = { ...newTask, _id: Date.now().toString(), createdAt: new Date().toISOString(), status: 'pending' };
+    setTasks(prev => [taskWithId, ...prev]);
+    setTaskFormConfig(null);
   };
+
+  const handleUpdateTask = (taskId, updatedData) => {
+    setTasks(prev => prev.map(t => t._id === taskId ? { ...t, ...updatedData } : t));
+  };
+
+  const handleDeleteTask = (taskId) => {
+    setTasks(prev => prev.filter(t => t._id !== taskId));
+    setSelectedTaskId(null);
+  }
 
   const handleCloseForm = () => {
-    setShowTaskForm(false);
+    setTaskFormConfig(null);
   };
 
+  const openForm = (type = 'task') => {
+    setTaskFormConfig({ type });
+  }
+
   return (
-    <div className="h-screen w-full bg-background flex overflow-hidden">
-      {/* Desktop sidebar (unchanged on md+) */}
-      <div className="hidden md:block">
+    <div className="d-flex vh-100 w-100 overflow-hidden bg-light">
+      {/* Desktop sidebar */}
+      <div className="d-none d-md-block h-100 border-end bg-white" style={{ width: '300px', flexShrink: 0 }}>
         <Sidebar
+          tasks={tasks}
           selectedTaskId={selectedTaskId}
           onSelectTask={handleSelectTask}
-          onOpenTaskForm={() => setShowTaskForm(true)}
+          onOpenTaskForm={() => openForm('task')}
         />
       </div>
 
-      {/* Mobile sidebar sheet – slides in from left on small screens */}
-      {mobileSidebarOpen && (
-        <div className="fixed inset-0 z-50 flex md:hidden">
-          <div className="w-[320px] max-w-full h-full bg-white shadow-xl flex flex-col">
-            {/* Mobile sidebar header with logo + X */}
-            <div className="h-12 px-3 border-b bg-white flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="h-7 w-7 rounded bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
-                  Z
-                </div>
-                <span className="text-sm font-semibold tracking-tight">
-                  ZenTask
-                </span>
+      {/* Mobile sidebar (Offcanvas) */}
+      <Offcanvas show={mobileSidebarOpen} onHide={() => setMobileSidebarOpen(false)}>
+        <Offcanvas.Header closeButton className="border-bottom">
+          <Offcanvas.Title>
+            <div className="d-flex align-items-center gap-2">
+              <div className="bg-primary text-white rounded d-flex align-items-center justify-content-center fw-bold" style={{ width: 30, height: 30, fontSize: 12 }}>
+                Z
               </div>
-              <button
-                type="button"
-                className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-slate-100"
-                onClick={() => setMobileSidebarOpen(false)}
-              >
-                <span className="text-lg leading-none">&times;</span>
-              </button>
+              <span className="fs-6 fw-semibold">ZenTask</span>
             </div>
-
-            {/* Actual sidebar content, scrollable on short screens */}
-            <div className="flex-1 overflow-y-auto">
-              <Sidebar
-                selectedTaskId={selectedTaskId}
-                onSelectTask={handleSelectTask}
-                onOpenTaskForm={() => setShowTaskForm(true)}
-              />
-            </div>
-          </div>
-
-          {/* Backdrop */}
-          <div
-            className="flex-1 bg-black/40"
-            onClick={() => setMobileSidebarOpen(false)}
+          </Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body className="p-0">
+          <Sidebar
+            tasks={tasks}
+            selectedTaskId={selectedTaskId}
+            onSelectTask={handleSelectTask}
+            onOpenTaskForm={() => openForm('task')}
           />
-        </div>
-      )}
+        </Offcanvas.Body>
+      </Offcanvas>
 
-      {/* Right side: header (mobile only) + main content */}
-      <div className="flex-1 overflow-hidden flex flex-col">
-        {/* Mobile top bar; hidden on desktop */}
-        <header className="flex items-center justify-between px-3 h-12 border-b bg-white md:hidden shrink-0">
-          <button
-            type="button"
-            className="h-8 w-8 rounded-md flex items-center justify-center hover:bg-slate-100"
-            onClick={() => setMobileSidebarOpen(true)}
-          >
-            <i className="bi bi-list text-lg" />
-          </button>
+      {/* Main Content Area */}
+      <div className="flex-grow-1 d-flex flex-column h-100 overflow-hidden">
+        {/* Mobile Header */}
+        <div className="d-flex d-md-none align-items-center justify-content-between p-3 border-bottom bg-white shrink-0">
+          <Button variant="light" onClick={() => setMobileSidebarOpen(true)} className="p-1 border-0">
+            <List size={24} />
+          </Button>
 
-          <div className="flex items-center gap-2">
-            {/* Overview icon button (matches sidebar Overview icon) */}
-            <button
-              type="button"
-              className="h-8 w-8 rounded-md border border-slate-200 flex items-center justify-center hover:bg-slate-50"
-            >
-              <i className="bi bi-layout-sidebar text-slate-600 text-sm" />
-            </button>
-
-            {/* Plus button opens task/habit form */}
-            <button
-              type="button"
-              className="h-8 w-8 rounded-md bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700"
-              onClick={() => setShowTaskForm(true)}
-            >
-              <i className="bi bi-plus-lg text-sm" />
-            </button>
+          <div className="d-flex align-items-center gap-2">
+            <Button variant="outline-secondary" className="p-1 border-0 d-flex align-items-center justify-content-center" style={{ width: 32, height: 32 }}>
+              <LayoutSidebar size={16} />
+            </Button>
+            <Button variant="primary" onClick={() => openForm('task')} className="p-1 d-flex align-items-center justify-content-center" style={{ width: 32, height: 32 }}>
+              <PlusLg size={16} />
+            </Button>
           </div>
-        </header>
+        </div>
 
-        {/* Scrollable main area so short screens can reach all content */}
-        <main className="flex-1 overflow-y-auto">
+        {/* Main View */}
+        <main className="flex-grow-1 overflow-auto">
           {selectedTaskId ? (
             <TaskDetail
               taskId={selectedTaskId}
-              onBack={handleBackToDashboard}
+              tasks={tasks}
+              onBackToDashboard={handleBackToDashboard}
+              onUpdateTask={handleUpdateTask}
+              onDeleteTask={handleDeleteTask}
             />
           ) : (
-            <Dashboard onSelectTask={handleSelectTask} />
+            <Dashboard tasks={tasks} onSelectTask={handleSelectTask} onOpenTaskForm={openForm} />
           )}
         </main>
       </div>
 
-      {showTaskForm && (
-        <TaskForm onSubmit={handleCreateTask} onCancel={handleCloseForm} />
+      {taskFormConfig && (
+        <TaskForm
+          initialType={taskFormConfig.type}
+          onSubmit={handleCreateTask}
+          onCancel={handleCloseForm}
+        />
       )}
     </div>
   );
