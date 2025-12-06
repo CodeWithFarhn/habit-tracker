@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Card, Row, Col, Container, Button } from 'react-bootstrap';
-import { Check2Square, ListUl, JournalCheck, LightningCharge } from 'react-bootstrap-icons';
+import React, { useState, useEffect } from 'react';
+import { Card, Row, Col, Container, Button, Dropdown } from 'react-bootstrap';
+import { Check2Square, ListUl, JournalCheck, LightningCharge, PersonCircle, BoxArrowRight } from 'react-bootstrap-icons';
+import { useNavigate } from 'react-router-dom';
 
 // Calculate stats from PROPS now
 const getStats = (tasks) => {
@@ -18,21 +19,26 @@ const getStats = (tasks) => {
     };
 };
 
-const StatsCard = ({ label, value, unit = '', icon: IconComponent, description, color = 'secondary' }) => {
+const StatsCard = ({ label, value, unit = '', icon: IconComponent, description, color = 'secondary', delay = '0s' }) => {
     const textClass = `text-${color}`;
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        setTimeout(() => setIsVisible(true), 100);
+    }, []);
 
     return (
-        <Card className="h-100 border-0 shadow-sm custom-card-hover">
+        <Card className={`h-100 border-0 shadow-sm stats-card ${isVisible ? 'fade-in-up' : ''}`} style={{ animationDelay: delay }}>
             <Card.Body>
                 <div className="d-flex align-items-start justify-content-between mb-3">
                     <div>
                         <p className={`fw-medium mb-1 ${textClass}`} style={{ fontSize: '0.875rem' }}>{label}</p>
                         <div className="d-flex align-items-baseline gap-1">
-                            <span className={`display-6 fw-bold ${textClass}`} style={{ fontSize: '2rem' }}>{value}</span>
+                            <span className={`display-6 fw-bold ${textClass} counter-number`} style={{ fontSize: '2rem' }}>{value}</span>
                             {unit && <span className="text-muted small">{unit}</span>}
                         </div>
                     </div>
-                    <div className={`${textClass} fs-3`}>
+                    <div className={`${textClass} fs-3 icon-float`}>
                         {IconComponent}
                     </div>
                 </div>
@@ -44,20 +50,93 @@ const StatsCard = ({ label, value, unit = '', icon: IconComponent, description, 
 
 const Dashboard = ({ tasks, onSelectTask, onOpenTaskForm }) => {
     const stats = getStats(tasks);
+    const navigate = useNavigate();
+    const [mounted, setMounted] = useState(false);
+
+    // Retrieve mock user from localStorage or use default
+    const user = JSON.parse(localStorage.getItem('user')) || { name: 'Demo User', email: 'demo@zentask.app' };
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        navigate('/');
+    };
+
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return 'Morning';
+        if (hour < 18) return 'Afternoon';
+        return 'Evening';
+    };
+
+    const getInitials = (name) => {
+        return name
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2);
+    };
 
     return (
         <div className="h-100 overflow-auto bg-white">
             {/* Header */}
-            <div className="bg-primary bg-gradient text-white p-5 mb-4 shadow-sm">
-                <Container fluid>
-                    <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
-                        <div>
-                            <h1 className="fw-bold display-5 mb-2">Good {new Date().getHours() < 12 ? 'Morning' : new Date().getHours() < 18 ? 'Afternoon' : 'Evening'}, User!</h1>
+            <div className="bg-primary bg-gradient text-white dashboard-header shadow-sm position-relative">
+                {/* Animated background shapes wrapper to prevent overflow but allow dropdowns to spill out of main header if needed (though dropdowns are usually absolute to window or parent, removing overflow-hidden from header helps) */}
+                <div className="position-absolute top-0 start-0 w-100 h-100 overflow-hidden" style={{ zIndex: 0 }}>
+                    <div className="header-shape header-shape-1"></div>
+                    <div className="header-shape header-shape-2"></div>
+                </div>
+
+                <Container fluid className="position-relative" style={{ zIndex: 10 }}>
+                    <div className="d-flex justify-content-between align-items-start py-4 px-3">
+                        {/* Left: Greeting */}
+                        <div className={`${mounted ? 'fade-in-left' : ''}`}>
+                            <h1 className="fw-bold display-5 mb-2">
+                                Good {getGreeting()}, {user.name.split(' ')[0]}!
+                            </h1>
                             <p className="lead mb-0 text-white opacity-75">
                                 Here's your overview for {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.
                             </p>
                         </div>
-                        {/* Quick Add button removed as requested */}
+
+                        {/* Right: User Profile Dropdown */}
+                        <div className={`${mounted ? 'fade-in-right' : ''}`}>
+                            <Dropdown align="end">
+                                <Dropdown.Toggle
+                                    as="div"
+                                    className="d-flex align-items-center gap-3 profile-toggle"
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    <div className="text-end d-none d-md-block">
+                                        <div className="fw-semibold text-white" style={{ fontSize: '0.9rem' }}>{user.name}</div>
+                                        <div className="small text-white opacity-75" style={{ fontSize: '0.75rem' }}>{user.email}</div>
+                                    </div>
+                                    <div className="profile-avatar bg-white text-primary rounded-circle d-flex align-items-center justify-content-center shadow fw-bold" style={{ width: 48, height: 48, fontSize: '1.1rem' }}>
+                                        {getInitials(user.name)}
+                                    </div>
+                                </Dropdown.Toggle>
+
+                                <Dropdown.Menu className="shadow-lg border-0 mt-2 profile-dropdown">
+                                    <div className="px-3 py-2 border-bottom">
+                                        <div className="fw-semibold text-dark">{user.name}</div>
+                                        <div className="small text-muted">{user.email}</div>
+                                    </div>
+                                    <Dropdown.Item className="py-2" onClick={() => navigate('/settings')}>
+                                        <PersonCircle className="me-2" size={16} />
+                                        Profile Settings
+                                    </Dropdown.Item>
+                                    <Dropdown.Divider />
+                                    <Dropdown.Item onClick={handleLogout} className="text-danger py-2">
+                                        <BoxArrowRight className="me-2" size={16} />
+                                        Log Out
+                                    </Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </div>
                     </div>
                 </Container>
             </div>
@@ -74,6 +153,7 @@ const Dashboard = ({ tasks, onSelectTask, onOpenTaskForm }) => {
                             icon={<Check2Square />}
                             description={`${Math.floor(stats.completionRate / 10)} of ${Math.ceil(100 / 10)} items completed`}
                             color="primary"
+                            delay="0.1s"
                         />
                     </Col>
                     <Col sm={6} lg={3}>
@@ -83,6 +163,7 @@ const Dashboard = ({ tasks, onSelectTask, onOpenTaskForm }) => {
                             icon={<ListUl />}
                             description="One-time tasks remaining"
                             color="info"
+                            delay="0.2s"
                         />
                     </Col>
                     <Col sm={6} lg={3}>
@@ -92,6 +173,7 @@ const Dashboard = ({ tasks, onSelectTask, onOpenTaskForm }) => {
                             icon={<JournalCheck />}
                             description="Recurring habits being tracked"
                             color="success"
+                            delay="0.3s"
                         />
                     </Col>
                     <Col sm={6} lg={3}>
@@ -102,6 +184,7 @@ const Dashboard = ({ tasks, onSelectTask, onOpenTaskForm }) => {
                             icon={<LightningCharge />}
                             description="Keep the momentum going!"
                             color="warning"
+                            delay="0.4s"
                         />
                     </Col>
                 </Row>
@@ -109,7 +192,7 @@ const Dashboard = ({ tasks, onSelectTask, onOpenTaskForm }) => {
                 <Row className="g-4">
                     {/* Category Distribution */}
                     <Col lg={6}>
-                        <Card className="h-100 border shadow-sm custom-card-hover">
+                        <Card className={`h-100 border shadow-sm chart-card ${mounted ? 'fade-in-up' : ''}`} style={{ animationDelay: '0.5s' }}>
                             <Card.Body className="p-4">
                                 <h5 className="fw-bold mb-4 text-dark">Category Distribution</h5>
                                 <div className="d-flex align-items-center justify-content-center" style={{ height: '160px' }}>
@@ -129,7 +212,7 @@ const Dashboard = ({ tasks, onSelectTask, onOpenTaskForm }) => {
 
                     {/* Quick Actions */}
                     <Col lg={6}>
-                        <Card className="h-100 border border-primary-subtle bg-primary-subtle shadow-sm custom-card-hover">
+                        <Card className={`h-100 border border-primary-subtle bg-primary-subtle shadow-sm action-card ${mounted ? 'fade-in-up' : ''}`} style={{ animationDelay: '0.6s' }}>
                             <Card.Body className="p-4">
                                 <h5 className="fw-bold mb-3 text-dark">Quick Actions</h5>
                                 <p className="text-secondary small mb-4">
@@ -138,7 +221,7 @@ const Dashboard = ({ tasks, onSelectTask, onOpenTaskForm }) => {
                                 <div className="d-flex flex-column flex-sm-row gap-3">
                                     <Button
                                         variant="light"
-                                        className="flex-fill border py-2 text-primary fw-medium shadow-sm hover-shadow"
+                                        className="flex-fill border py-2 text-primary fw-medium shadow-sm action-button"
                                         onClick={() => onOpenTaskForm('habit')}
                                     >
                                         <div className="text-center">
@@ -148,7 +231,7 @@ const Dashboard = ({ tasks, onSelectTask, onOpenTaskForm }) => {
                                     </Button>
                                     <Button
                                         variant="light"
-                                        className="flex-fill border py-2 text-primary fw-medium shadow-sm hover-shadow"
+                                        className="flex-fill border py-2 text-primary fw-medium shadow-sm action-button"
                                         onClick={() => onOpenTaskForm('task')}
                                     >
                                         <div className="text-center">
@@ -162,6 +245,8 @@ const Dashboard = ({ tasks, onSelectTask, onOpenTaskForm }) => {
                     </Col>
                 </Row>
             </Container>
+
+
         </div>
     );
 };
