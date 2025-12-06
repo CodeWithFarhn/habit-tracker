@@ -36,10 +36,6 @@ const habitSchema = mongoose.Schema(
 
 // Compound index for frequent queries (e.g. creating dashboards)
 habitSchema.index({ user: 1, streak: -1 });
-{
-    timestamps: true,
-    }
-);
 
 const Habit = mongoose.model('Habit', habitSchema);
 

@@ -1,79 +1,81 @@
-# Deployment Guide: Hosting ZenTask for Free
+# Deployment Guide: Free Hosting for ZenTask
 
-This guide outlines how to host your MERN stack application using the best free-tier services available:
+This guide is specifically tailored for your **ZenTask (habit-tracker)** repository.
 
-*   **Database**: [MongoDB Atlas](https://www.mongodb.com/atlas) (Free M0 Cluster)
-*   **Backend**: [Render](https://render.com/) (Free Web Service)
-*   **Frontend**: [Vercel](https://vercel.com/) (Free Static Hosting)
+**Project Structure:**
+*   **Backend**: Located in `backend/` | Runs on **Render**
+*   **Frontend**: Located in `frontend/` | Runs on **Vercel**
+*   **Database**: **MongoDB Atlas**
 
 ---
 
-## 1. Database: MongoDB Atlas
+## 1. Database: MongoDB Atlas (Cloud DB)
 
-Since your local database (`mongodb://localhost...`) won't be accessible to the cloud, you need a cloud database.
-
-1.  **Create Account**: Sign up at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
-2.  **Create Cluster**: Select **Build a Database** -> **Shared** (Free) -> **Create**.
-3.  **Setup User**: Create a database user (e.g., `admin`) and password. **Save this password!**
-4.  **Network Access**: Go to **Network Access** -> **Add IP Address** -> **Allow Access from Anywhere** (`0.0.0.0/0`).
-    *   *Note: This is necessary for Render/Vercel to connect.*
+1.  **Log in** to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+2.  **Create a Cluster**: Select the **Shared (Free)** tier.
+3.  **Database Access**:
+    *   Create a user (e.g., `zentask_admin`).
+    *   **Password**: Generate a strong password and **COPY IT** immediately.
+4.  **Network Access**:
+    *   Click **Add IP Address** -> **Allow Access from Anywhere** (`0.0.0.0/0`).
 5.  **Get Connection String**:
     *   Click **Connect** -> **Drivers** -> **Node.js**.
-    *   Copy the string: `mongodb+srv://admin:<password>@cluster0.mongodb.net/?retryWrites=true&w=majority`
-    *   Replace `<password>` with your actual password.
+    *   Copy the URI: `mongodb+srv://zentask_admin:<password>@cluster...`
 
 ---
 
-## 2. Backend: Render
+## 2. Backend Hosting: Render
 
-Render is excellent for hosting Node.js/Express APIs.
-
-1.  **Push Code**: Ensure your latest code is on GitHub.
-2.  **Sign Up**: Log in to [Render](https://render.com/) with GitHub.
-3.  **New Web Service**: Click **New +** -> **Web Service**.
-4.  **Connect Repo**: Select your `habit-tracker` repository.
-5.  **Direct the Build**:
-    *   Render needs to know where the backend code lives. Since your backend is in a subfolder (`backend/`), we need to tell it that.
-    *   **Root Directory**: `backend`
+1.  **Log in** to [Render.com](https://render.com/) using your GitHub account.
+2.  **New Web Service**: Click **New +** -> **Web Service**.
+3.  **Select Repository**: Choose `habit-tracker`.
+4.  **Configure Service**:
+    *   **Name**: `zentask-api` (or similar)
+    *   **Root Directory**: `backend` (Crucial: tells Render where package.json is)
+    *   **Runtime**: Node
     *   **Build Command**: `npm install`
-    *   **Start Command**: `npm start`
-6.  **Environment Variables**:
-    *   Scroll down to **Environment Variables**.
-    *   Add `MONGODB_URI`: Paste your Atlas connection string.
-    *   Add `JWT_SECRET`: Enter a secure random string.
-    *   Add `NODE_ENV`: `production`
-7.  **Deploy**: Click **Create Web Service**.
-    *   *Wait for the build to finish. Once live, Render will give you a URL (e.g., `https://zentask-api.onrender.com`). Copy this!*
+    *   **Start Command**: `npm start` (Verified: runs `node src/server.js`)
+5.  **Environment Variables** (Scroll down):
+    *   `NODE_ENV` = `production`
+    *   `MONGODB_URI` = *Paste your Atlas URI (replace <password> with actual password)*
+    *   `JWT_SECRET` = *Enter a secure random string (e.g., long-random-text)*
+6.  **Deploy**: Click **Create Web Service**.
+    *   *Copy the URL provided by Render (e.g., `https://zentask-api.onrender.com`).*
 
 ---
 
-## 3. Frontend: Vercel
+## 3. Frontend Hosting: Vercel
 
-Vercel is optimized for Vite/React apps.
-
-1.  **Prepare Code**:
-    *   Open `frontend/.env` (or create it locally if missing for testing) and ensure your code uses the variable `import.meta.env.VITE_API_URL`.
-    *   *Important*: You likely need to check your `api.js` or `authService.js` to ensure they use this variable instead of hardcoded `http://localhost:5000`.
-2.  **Sign Up**: Log in to [Vercel](https://vercel.com/) with GitHub.
-3.  **Add New Project**: Click **Add New** -> **Project**.
-4.  **Import Repo**: Select `habit-tracker`.
-5.  **Configure Project**:
-    *   **Framework Preset**: Vite
+1.  **Log in** to [Vercel.com](https://vercel.com/) using GitHub.
+2.  **Add New Project**: Click **Add New** -> **Project**.
+3.  **Import Repository**: Select `habit-tracker`.
+4.  **Configure Project**:
+    *   **Framework Preset**: Vite (Vercel should auto-detect this).
     *   **Root Directory**: Click **Edit** and select `frontend`.
+5.  **Build Settings** (Default is usually correct):
+    *   *Build Command*: `vite build`
+    *   *Output Directory*: `dist`
 6.  **Environment Variables**:
-    *   Add `VITE_API_URL`.
-    *   Value: Your Render Backend URL (e.g., `https://zentask-api.onrender.com/api`).
-    *   *Note: Ensure you include `/api` if your frontend service calls expect it, or just the base domain if the code appends `/api`.*
+    *   **Name**: `VITE_API_URL`
+    *   **Value**: Your Render Backend URL + `/api` (e.g., `https://zentask-api.onrender.com/api`)
 7.  **Deploy**: Click **Deploy**.
 
 ---
 
-## 4. Final Polish
+## 4. Final Configuration
 
-1.  **CORS (Important)**:
-    *   Go back to your **Backend code** (`server.js`).
-    *   Ensure your CORS configuration allows the new Vercel frontend domain.
-    *   Update `cors({ origin: 'https://your-vercel-app.vercel.app' })` or use `*` temporarily for testing.
-    *   Push this change to GitHub; Render will auto-deploy.
+**Update CORS on Backend:**
+Once your Vercel site is live (e.g., `https://habit-tracker-zeta.vercel.app`), you must allow it to talk to your backend.
 
-**You are now live!** 🚀
+1.  Open `backend/src/server.js` locally.
+2.  Find the `cors` configuration.
+3.  Update it to allow your Vercel domain:
+    ```javascript
+    app.use(cors({
+        origin: ['https://habit-tracker-zeta.vercel.app', 'http://localhost:5173'],
+        credentials: true
+    }));
+    ```
+4.  Commit and Push. Render will auto-redeploy with the new settings.
+
+**Success! Your ZenTask MERN app is now live.** 🚀
