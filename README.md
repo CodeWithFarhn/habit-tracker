@@ -1,238 +1,145 @@
 # ZenTask - Task & Habit Tracker
 
-A modern, responsive productivity application for managing tasks and building habits. Built with React and Tailwind CSS on the frontend and Node.js with Express and MongoDB on the backend.
+A modern, responsive productivity application built with the **MERN Stack** (MongoDB, Express.js, React, Node.js). ZenTask allows users to manage daily tasks, build long-term habits, and track their progress with insightful analytics.
 
 ## Table of Contents
 
-- [Project Overview](#project-overview)
 - [Features](#features)
-- [Project Structure](#project-structure)
 - [Tech Stack](#tech-stack)
-- [Setup Instructions](#setup-instructions)
-- [API Endpoints](#api-endpoints)
-- [Next Steps](#next-steps)
-
-## Project Overview
-
-ZenTask is a productivity tool that helps users:
-- Manage one-time tasks with priorities and due dates
-- Track recurring habits (daily, weekly, monthly)
-- View completion statistics and category distribution on a dashboard
-- Organize tasks by category (Work, Personal, Health, Other)
-
-The application follows a backend-driven architecture where frontend actions trigger API requests, backend validation and database updates, and responses update the UI accordingly.
+- [Project Structure](#project-structure)
+- [Setup & Installation](#setup--installation)
+- [API Documentation](#api-documentation)
+- [Responsive Design](#responsive-design)
+- [License](#license)
 
 ## Features
 
-### Frontend (React + Tailwind CSS)
+### Core Functionality
+- **Task Management**: Create, edit, delete, and organize one-time tasks with priorities and due dates.
+- **Habit Tracking**: Build daily or weekly habits and track streaks.
+- **Smart Sorting**: Items are automatically sorted by status (pending first) and due date.
+- **Dashboard Analytics**: View completion rates, pending counts, active habits, and your best streak.
+- **Category Visualization**: Interactive donut chart showing task distribution (Work, Personal, Health).
 
-**Responsive Layout**
-- Desktop: Sidebar and Dashboard side-by-side
-- Mobile: Collapsible sidebar with top navigation bar
-- Fully responsive cards and grid layouts
+### User Experience (UX)
+- **Responsive Design**: Mobile-first layout with a collapsible sidebar and optimized touch targets.
+- **Real-time Feedback**: Toast notifications for all major actions (create, update, delete).
+- **Dark/Light Mode**: (Coming Soon foundation laid in CSS variables).
+- **Accessibility**: Semantic HTML and ARIA labels for screen reader support.
 
-**Sidebar (Left Panel)**
-- Task and Habit management interface
-- Search functionality for filtering tasks
-- Tab filters: All, Task, Habit
-- Status dropdown: All, Pending, Completed, Overdue
-- Task list with priority badges, due dates, and category tags
-- Mobile overlay sidebar with close button
-    ├── components/
-    │   ├── Dashboard.jsx
-    │   ├── Sidebar.jsx
-    │   ├── TaskDetail.jsx
-    │   ├── TaskForm.jsx
-    │   └── UI/
-    │       └── CustomSelect.jsx
-    ├── services/
-    │   └── api.js
-    ├── App.jsx
-    ├── main.jsx
-    ├── index.html
-    └── index.css
-```
+### Security
+- **Authentication**: Secure Signup/Login with JWT (JSON Web Tokens).
+- **Protected Routes**: Dashboard and Settings are inaccessible without a valid session.
+- **Password Security**: Passwords are hashed using `bcryptjs`.
 
-### Backend
-
-```plaintext
-backend/
-└── src/
-    ├── config/         # Database configuration
-    │   └── database.js
-    ├── models/         # MongoDB schemas
-    │   ├── Task.js
-    │   ├── Habit.js
-    │   └── User.js
-    ├── routes/         # API endpoints
-    │   ├── tasks.js
-    │   ├── habits.js
-    │   └── stats.js
-    ├── controllers/    # Request handlers and business logic
-    │   ├── taskController.js
-    │   ├── habitController.js
-    │   └── statsController.js
-    ├── middleware/     # Custom middleware
-    │   ├── errorHandler.js
-    │   └── validation.js
-    └── server.js       # Express app entry point
-```
-
-**API Endpoints**
-- Tasks: Create, Read, Update, Delete, Mark Complete
-- Habits: Create, Read, Update, Delete, Log Completion
-- Dashboard Statistics
+### Advanced Data
+- **Streaks**: Server-side logic automatically calculates habit streaks based on completion history.
+- **User Profile**: Persist custom bio and notification preferences.
 
 ## Tech Stack
 
 ### Frontend
-- React 19 - UI library
-- Vite 7.2.4 - Build tool and dev server
-- Tailwind CSS - Utility-first CSS framework
-- Bootstrap Icons - Icon library
-- React Icons - Icon library
-- Axios - HTTP client
-- React Router v7 - Navigation
+- **Framework**: React 19 (via Vite)
+- **UI Library**: React Bootstrap
+- **Styling**: Custom CSS & Bootstrap Utilities
+- **State Management**: Context API (AuthContext)
+- **Routing**: React Router v6
 
 ### Backend
-- Node.js - JavaScript runtime
-- Express - Web framework
-- MongoDB - NoSQL database
-- Mongoose - MongoDB object modeling
-- dotenv - Environment variable management
-- CORS - Cross-origin resource sharing
-- express-validator - Request validation
-- nodemon - Development auto-reload
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Database**: MongoDB
+- **ODM**: Mongoose
+- **Authentication**: JWT & BcryptJS
 
-## Setup Instructions
+## Project Structure
+
+```plaintext
+root/
+├── backend/
+│   ├── src/
+│   │   ├── config/         # Database connection
+│   │   ├── controllers/    # Business logic (Auth, Habits, Tasks)
+│   │   ├── models/         # Mongoose Schemas (User, Habit, Task)
+│   │   ├── routes/         # API Routes
+│   │   ├── middleware/     # Auth protection
+│   │   └── server.js       # Entry point
+│   └── package.json
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/     # Reusable UI components (Sidebar, Forms)
+│   │   ├── context/        # Global State (Auth)
+│   │   ├── pages/          # Main Views (Dashboard, Auth, Landing)
+│   │   ├── services/       # API integration (Axios)
+│   │   └── App.jsx         # Main Router
+│   └── package.json
+└── README.md
+```
+
+## Setup & Installation
 
 ### Prerequisites
+- Node.js (v18+)
+- MongoDB (Local or Atlas URI)
 
-- Node.js v18 or higher
-- MongoDB installed locally or MongoDB Atlas account
-- Git
-
-### Frontend Setup
+### 1. Clone the Repository
 ```bash
-cd frontend
-npm install
-npm run dev
+git clone <repository-url>
+cd habit-tracker
 ```
-Frontend will run on `http://localhost:5173`
 
-### Backend Setup
+### 2. Backend Setup
 ```bash
 cd backend
 npm install
-cp .env.example .env
+
+# Create .env file
+echo "PORT=5000" > .env
+echo "MONGODB_URI=mongodb://localhost:27017/zentask" >> .env
+echo "JWT_SECRET=your_super_secret_key" >> .env
+
+# Start Server
 npm run dev
 ```
-Backend will run on `http://localhost:5000`
+*Backend runs on `http://localhost:5000`*
 
-Configure `.env` with your MongoDB connection string:
+### 3. Frontend Setup
+```bash
+cd ../frontend
+npm install
+
+# Start Client
+npm run dev
 ```
-MONGODB_URI=mongodb://localhost:27017/zentask
-PORT=5000
-```
+*Frontend runs on `http://localhost:5173`*
 
-## API Endpoints
+## API Documentation
 
-### Tasks
+| Method | Endpoint | Description | Protected |
+| :--- | :--- | :--- | :--- |
+| **Auth** | | | |
+| POST | `/api/auth/signup` | Register new user | No |
+| POST | `/api/auth/login` | Login user | No |
+| PUT | `/api/auth/profile` | Update bio/notifications | **Yes** |
+| **Tasks** | | | |
+| GET | `/api/tasks` | Get all tasks | **Yes** |
+| POST | `/api/tasks` | Create task | **Yes** |
+| PUT | `/api/tasks/:id` | Update task status/details | **Yes** |
+| DELETE | `/api/tasks/:id` | Delete task | **Yes** |
+| **Habits** | | | |
+| GET | `/api/habits` | Get all habits | **Yes** |
+| POST | `/api/habits` | Create habit | **Yes** |
+| PUT | `/api/habits/:id` | Update habit/streak | **Yes** |
+| DELETE | `/api/habits/:id` | Delete habit | **Yes** |
 
-```
-GET    /api/tasks                # Get all tasks
-GET    /api/tasks/:id            # Get single task
-POST   /api/tasks                # Create task
-PATCH  /api/tasks/:id            # Update task
-PATCH  /api/tasks/:id/complete   # Mark as completed
-DELETE /api/tasks/:id            # Delete task
-```
+## Responsive Design
 
-**POST /api/tasks Request Body:**
-```json
-{
-  "title": "Complete project proposal",
-  "description": "Finish the Q4 project proposal",
-  "category": "work",
-  "priority": "high",
-  "dueDate": "2025-12-15T00:00:00.000Z"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "_id": "507f1f77bcf86cd799439011",
-    "title": "Complete project proposal",
-    "category": "work",
-    "priority": "high",
-    "status": "pending",
-    "dueDate": "2025-12-15T00:00:00.000Z",
-    "createdAt": "2025-12-03T12:00:00.000Z",
-    "updatedAt": "2025-12-03T12:00:00.000Z"
-  }
-}
-```
-
-### Habits
-
-```
-GET    /api/habits             # Get all habits
-GET    /api/habits/:id         # Get single habit
-POST   /api/habits             # Create habit
-PATCH  /api/habits/:id         # Update habit
-PATCH  /api/habits/:id/log     # Log habit completion
-DELETE /api/habits/:id         # Delete habit
-```
-
-### Dashboard Statistics
-
-```
-GET /api/stats/dashboard    # Get dashboard statistics
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "completionRate": 33,
-    "pendingTasks": 2,
-    "overdueTasks": 1,
-    "activeHabits": 1,
-    "bestStreak": 7,
-    "categoryDistribution": {
-      "work": 2,
-      "health": 2,
-      "personal": 1
-    }
-  }
-}
-```
-
-## Next Steps
-
-### Priority Tasks
-
-1. **Backend Implementation**
-   - Implement controller logic for tasks and habits
-   - Complete route handlers
-   - Add request validation
-   - Test all endpoints
-
-2. **Frontend-Backend Integration**
-   - Replace sample data with API calls
-   - Wire up form submissions
-   - Add loading states and error handling
-   - Implement success notifications
-
-3. **UI Enhancements**
-   - Add category distribution chart
-   - Implement empty states
-   - Add toast notifications
+The application is fully responsive across devices:
+- **Mobile (<768px)**: Navigation moves to a top bar with a hamburger menu. Cards stack vertically.
+- **Tablet (768px - 1024px)**: Sidebar appears, grid adjusts to 2 columns.
+- **Desktop (>1024px)**: Full 4-column dashboard layout with persistent sidebar.
 
 ## License
 
-This project is for learning purposes.
+This project is open source and available under the [MIT License](LICENSE).

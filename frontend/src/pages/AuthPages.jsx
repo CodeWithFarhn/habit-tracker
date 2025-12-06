@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Card, Form, Button, Row, Col } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { CheckCircle, LightningCharge, ShieldCheck, ArrowRight } from 'react-bootstrap-icons';
+import { useAuth } from '../context/AuthContext';
 
 const AuthLayout = ({ children, title, subtitle, footerText, footerLink, footerLinkText }) => {
     const [mounted, setMounted] = useState(false);
@@ -157,13 +158,20 @@ const AuthLayout = ({ children, title, subtitle, footerText, footerLink, footerL
 export const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const { login } = useAuth();
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        if (email && password) {
-            localStorage.setItem('user', JSON.stringify({ name: 'Demo User', email }));
-            navigate('/app');
+        setError('');
+        try {
+            if (email && password) {
+                await login({ email, password });
+                navigate('/app');
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || 'Login failed');
         }
     };
 
@@ -176,29 +184,36 @@ export const LoginPage = () => {
             footerLinkText="Sign up for free"
         >
             <Form onSubmit={handleLogin}>
+                {error && <div className="alert alert-danger small py-2">{error}</div>}
                 <Form.Group className="mb-3">
-                    <Form.Label className="small fw-medium">Email address</Form.Label>
+                    <Form.Label htmlFor="login-email" className="small fw-medium">Email address</Form.Label>
                     <Form.Control
+                        id="login-email"
+                        name="email"
                         type="email"
                         placeholder="Enter your email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         className="py-2"
+                        autoComplete="email"
                     />
                 </Form.Group>
                 <Form.Group className="mb-4">
                     <div className="d-flex justify-content-between align-items-center mb-1">
-                        <Form.Label className="small fw-medium mb-0">Password</Form.Label>
+                        <Form.Label htmlFor="login-password" className="small fw-medium mb-0">Password</Form.Label>
                         <Link to="#" className="small text-decoration-none text-primary hover-underline">Forgot password?</Link>
                     </div>
                     <Form.Control
+                        id="login-password"
+                        name="password"
                         type="password"
                         placeholder="Enter your password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                         className="py-2"
+                        autoComplete="current-password"
                     />
                 </Form.Group>
                 <Button variant="primary" type="submit" className="w-100 py-2 fw-semibold mb-3 glow-on-hover">
@@ -215,13 +230,20 @@ export const SignupPage = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const { signup } = useAuth();
     const navigate = useNavigate();
 
-    const handleSignup = (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault();
-        if (email && password && name) {
-            localStorage.setItem('user', JSON.stringify({ name, email }));
-            navigate('/app');
+        setError('');
+        try {
+            if (email && password && name) {
+                await signup({ name, email, password });
+                navigate('/app');
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || 'Signup failed');
         }
     };
 
@@ -234,37 +256,47 @@ export const SignupPage = () => {
             footerLinkText="Log in"
         >
             <Form onSubmit={handleSignup}>
+                {error && <div className="alert alert-danger small py-2">{error}</div>}
                 <Form.Group className="mb-3">
-                    <Form.Label className="small fw-medium">Full Name</Form.Label>
+                    <Form.Label htmlFor="signup-name" className="small fw-medium">Full Name</Form.Label>
                     <Form.Control
+                        id="signup-name"
+                        name="name"
                         type="text"
                         placeholder="Enter your name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
                         className="py-2"
+                        autoComplete="name"
                     />
                 </Form.Group>
                 <Form.Group className="mb-3">
-                    <Form.Label className="small fw-medium">Email address</Form.Label>
+                    <Form.Label htmlFor="signup-email" className="small fw-medium">Email address</Form.Label>
                     <Form.Control
+                        id="signup-email"
+                        name="email"
                         type="email"
                         placeholder="name@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         className="py-2"
+                        autoComplete="email"
                     />
                 </Form.Group>
                 <Form.Group className="mb-4">
-                    <Form.Label className="small fw-medium">Password</Form.Label>
+                    <Form.Label htmlFor="signup-password" className="small fw-medium">Password</Form.Label>
                     <Form.Control
+                        id="signup-password"
+                        name="password"
                         type="password"
                         placeholder="Create a password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                         className="py-2"
+                        autoComplete="new-password"
                     />
                     <Form.Text className="text-muted small">Must be at least 8 characters with numbers & symbols.</Form.Text>
                 </Form.Group>

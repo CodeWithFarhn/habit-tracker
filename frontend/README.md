@@ -1,16 +1,60 @@
-# React + Vite
+# ZenTask Client (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The responsive user interface for **ZenTask**, a modern task and habit tracker. Built with **React 19** and **Vite**, featuring a mobile-first design system using **React Bootstrap**.
 
-Currently, two official plugins are available:
+## Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Authentication**: Sign Up / Login forms with error handling and JWT storage.
+- **Dashboard**: Unified view of Tasks (one-time) and Habits (recurring).
+- **Responsive Layout**:
+  - **Desktop**: Persistent sidebar navigation.
+  - **Mobile**: Collapsible `Offcanvas` sidebar and top navigation bar.
+- **Components**:
+  - `TaskForm`: Semantic form with accessibility attributes (`id`, `name`) for browser autofill.
+  - `TaskDetail`: Deep linkable view for editing items.
+  - `StatsCard` & `DonutChart`: Visual analytics for productivity.
+- **Security**: `ProtectedRoute` wrapper checks for valid session before rendering private pages.
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Core**: [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
+- **UI Framework**: [React Bootstrap](https://react-bootstrap.netlify.app/)
+- **Icons**: [React Bootstrap Icons](https://www.npmjs.com/package/react-bootstrap-icons)
+- **Routing**: [React Router v6](https://reactrouter.com/)
+- **HTTP Client**: [Axios](https://axios-http.com/)
 
-## Expanding the ESLint configuration
+## Project Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```plaintext
+src/
+├── components/     # Reusable UI (Sidebar, Dashboard, Forms)
+├── context/        # AuthProvider (User state management)
+├── services/       # API integration (authService, taskService)
+├── pages/          # Route Views (AuthPages, DashboardPage)
+├── data/           # Constants and helpers
+└── index.css       # Global styles & variables
+```
+
+## Getting Started
+
+1.  **Install Dependencies:**
+    ```bash
+    npm install
+    ```
+
+2.  **Environment Setup:**
+    Ensure `.env` exists with your backend URL:
+    ```env
+    VITE_API_URL=http://localhost:5000/api
+    ```
+
+3.  **Run Development Server:**
+    ```bash
+    npm run dev
+    ```
+    Access the app at `http://localhost:5173`.
+
+4.  **Build for Production:**
+    ```bash
+    npm run build
+    ```

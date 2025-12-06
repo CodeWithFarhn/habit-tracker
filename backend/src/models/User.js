@@ -16,6 +16,16 @@ const userSchema = mongoose.Schema(
             type: String,
             required: [true, 'Please add a password'],
         },
+        bio: {
+            type: String,
+            default: '',
+        },
+        notifications: {
+            email: { type: Boolean, default: true },
+            push: { type: Boolean, default: false },
+            weeklyDigest: { type: Boolean, default: true },
+            milestoneAlerts: { type: Boolean, default: true },
+        },
     },
     {
         timestamps: true,

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Container, Button, Dropdown } from 'react-bootstrap';
 import { Check2Square, ListUl, JournalCheck, LightningCharge, PersonCircle, BoxArrowRight } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
+import { getCategoryColor } from '../data/mockData';
 
 // Calculate stats from PROPS now
 const getStats = (tasks) => {
@@ -11,11 +12,17 @@ const getStats = (tasks) => {
     const activeHabits = tasks.filter(t => t.frequency && t.status !== 'completed').length;
     const habits = tasks.filter(t => t.frequency).length;
 
+    // Calculate Best Streak (highest streak among all habits)
+    const habitStreaks = tasks
+        .filter(t => t.type === 'habit' && t.streak)
+        .map(h => h.streak);
+    const bestStreak = habitStreaks.length > 0 ? Math.max(...habitStreaks) : 0;
+
     return {
         completionRate: totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0,
         pendingTasks: pendingTasks,
         activeHabits: habits,
-        bestStreak: 7 // Placeholder logic remains
+        bestStreak: bestStreak
     };
 };
 
@@ -104,7 +111,7 @@ const Dashboard = ({ tasks, onSelectTask, onOpenTaskForm }) => {
                         </div>
 
                         {/* Right: User Profile Dropdown */}
-                        <div className={`${mounted ? 'fade-in-right' : ''}`}>
+                        <div className={`d-none d-md-block ${mounted ? 'fade-in-right' : ''}`}>
                             <Dropdown align="end">
                                 <Dropdown.Toggle
                                     as="div"
@@ -195,17 +202,86 @@ const Dashboard = ({ tasks, onSelectTask, onOpenTaskForm }) => {
                         <Card className={`h-100 border shadow-sm chart-card ${mounted ? 'fade-in-up' : ''}`} style={{ animationDelay: '0.5s' }}>
                             <Card.Body className="p-4">
                                 <h5 className="fw-bold mb-4 text-dark">Category Distribution</h5>
-                                <div className="d-flex align-items-center justify-content-center" style={{ height: '160px' }}>
-                                    <div className="text-center text-muted">
-                                        <div className="mb-2">No data available</div>
-                                        <small className="text-secondary opacity-75">Chart placeholder for category breakdown</small>
-                                        <ul className="list-unstyled mt-3 small text-secondary">
-                                            <li>Work: {tasks.filter(t => t.category === 'work').length}</li>
-                                            <li>Health: {tasks.filter(t => t.category === 'health').length}</li>
-                                            <li>Personal: {tasks.filter(t => t.category === 'personal').length}</li>
-                                        </ul>
+                                {tasks.length === 0 ? (
+                                    <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '160px' }}>
+                                        <div className="text-center text-muted">
+                                            <div className="mb-2">No data available</div>
+                                            <small className="text-secondary opacity-75">Start creating tasks to see analytics</small>
+                                        </div>
                                     </div>
-                                </div>
+                                ) : (
+                                    <div className="d-flex align-items-center justify-content-center gap-5">
+                                        {/* Donut Chart */}
+                                        <div className="position-relative" style={{ width: '140px', height: '140px' }}>
+                                            <svg width="140" height="140" viewBox="0 0 140 140" className="rotate-90">
+                                                <circle cx="70" cy="70" r="54" fill="transparent" stroke="#f8f9fa" strokeWidth="12" />
+                                                {(() => {
+                                                    let offset = 0;
+                                                    const circumference = 2 * Math.PI * 54;
+
+                                                    return ['work', 'personal', 'health'].map(cat => {
+                                                        const count = tasks.filter(t => t.category === cat).length;
+                                                        if (count === 0) return null;
+
+                                                        const percentage = count / tasks.length;
+                                                        const dashArray = percentage * circumference;
+                                                        const currentOffset = offset;
+                                                        offset += dashArray;
+
+                                                        const colorMap = {
+                                                            'work': '#0dcaf0',      // info
+                                                            'personal': '#198754',  // success
+                                                            'health': '#dc3545'     // danger
+                                                        };
+
+                                                        return (
+                                                            <circle
+                                                                key={cat}
+                                                                cx="70"
+                                                                cy="70"
+                                                                r="54"
+                                                                fill="transparent"
+                                                                stroke={colorMap[cat]}
+                                                                strokeWidth="12"
+                                                                strokeDasharray={`${dashArray} ${circumference}`}
+                                                                strokeDashoffset={-currentOffset}
+                                                                strokeLinecap="round"
+                                                                style={{ transition: 'stroke-dasharray 1s ease' }}
+                                                            />
+                                                        );
+                                                    });
+                                                })()}
+                                            </svg>
+                                            <div className="position-absolute top-50 start-50 translate-middle text-center">
+                                                <div className="fs-4 fw-bold">{tasks.length}</div>
+                                                <div className="text-muted small" style={{ fontSize: '0.7rem' }}>Total</div>
+                                            </div>
+                                        </div>
+
+                                        {/* Legend */}
+                                        <div className="d-flex flex-column gap-3">
+                                            {['work', 'personal', 'health'].map(cat => {
+                                                const count = tasks.filter(t => t.category === cat).length;
+                                                const percentage = Math.round((count / tasks.length) * 100);
+                                                const colorMap = {
+                                                    'work': 'bg-info',
+                                                    'personal': 'bg-success',
+                                                    'health': 'bg-danger'
+                                                };
+
+                                                return (
+                                                    <div key={cat} className="d-flex align-items-center gap-2">
+                                                        <div className={`rounded-circle ${colorMap[cat]}`} style={{ width: '10px', height: '10px' }}></div>
+                                                        <div>
+                                                            <div className="fw-semibold small text-capitalize">{cat}</div>
+                                                            <div className="text-muted" style={{ fontSize: '0.75rem' }}>{percentage}% ({count})</div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
                             </Card.Body>
                         </Card>
                     </Col>

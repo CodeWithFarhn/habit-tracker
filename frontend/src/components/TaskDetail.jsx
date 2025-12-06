@@ -150,18 +150,29 @@ export default function TaskDetail({ taskId, tasks, onBackToDashboard, onDeleteT
 
                         {/* Due Date */}
                         <div className="flex-fill">
-                            <Form.Label className="small fw-bold text-secondary text-uppercase mb-2">Due Date</Form.Label>
+                            <Form.Label className="small fw-bold text-secondary text-uppercase mb-2">
+                                {task.frequency ? 'Frequency' : 'Due Date'}
+                            </Form.Label>
                             {isEditing ? (
-                                <Form.Control
-                                    type="date"
-                                    value={editData.dueDate ? new Date(editData.dueDate).toISOString().split('T')[0] : ''}
-                                    onChange={(e) => setEditData({ ...editData, dueDate: new Date(e.target.value).toISOString() })}
-                                    className="fw-semibold"
-                                />
+                                task.frequency ? (
+                                    <div className="p-2 border rounded bg-light text-muted">
+                                        Frequency editing not available in quick view
+                                    </div>
+                                ) : (
+                                    <Form.Control
+                                        type="date"
+                                        value={editData.dueDate ? new Date(editData.dueDate).toISOString().split('T')[0] : ''}
+                                        onChange={(e) => setEditData({ ...editData, dueDate: new Date(e.target.value).toISOString() })}
+                                        className="fw-semibold"
+                                    />
+                                )
                             ) : (
                                 <div className="bg-light border rounded p-3">
-                                    <p className="mb-0 fw-semibold text-dark">
-                                        {new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                    <p className="mb-0 fw-semibold text-dark text-capitalize">
+                                        {task.frequency
+                                            ? task.frequency
+                                            : (task.dueDate ? new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'No Due Date')
+                                        }
                                     </p>
                                 </div>
                             )}

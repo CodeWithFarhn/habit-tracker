@@ -186,15 +186,32 @@ const Sidebar = ({ tasks, selectedTaskId, onSelectTask, onOpenTaskForm }) => {
 
                                             <div className="d-flex align-items-center gap-3 text-muted small">
                                                 <div className="d-flex align-items-center gap-1">
-                                                    <Calendar size={12} className={isCompleted ? 'text-success' : 'text-muted'} />
-                                                    <span
-                                                        style={{
-                                                            fontSize: '0.75rem',
-                                                            color: isCompleted ? '#28a745' : '#6c757d'
-                                                        }}
-                                                    >
-                                                        {formatDate(task.dueDate)}
-                                                    </span>
+                                                    {task.type === 'habit' ? (
+                                                        <>
+                                                            <Clock size={12} className={isCompleted ? 'text-success' : 'text-muted'} />
+                                                            <span
+                                                                style={{
+                                                                    fontSize: '0.75rem',
+                                                                    color: isCompleted ? '#28a745' : '#6c757d',
+                                                                    textTransform: 'capitalize'
+                                                                }}
+                                                            >
+                                                                {task.frequency || 'Daily'}
+                                                            </span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Calendar size={12} className={isCompleted ? 'text-success' : 'text-muted'} />
+                                                            <span
+                                                                style={{
+                                                                    fontSize: '0.75rem',
+                                                                    color: isCompleted ? '#28a745' : '#6c757d'
+                                                                }}
+                                                            >
+                                                                {formatDate(task.dueDate)}
+                                                            </span>
+                                                        </>
+                                                    )}
                                                 </div>
 
                                                 {/* Category badge */}

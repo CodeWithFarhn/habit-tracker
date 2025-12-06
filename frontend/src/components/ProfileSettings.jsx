@@ -6,6 +6,7 @@ import {
     CheckCircle, Clock, List
 } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
+import authService from '../services/authService';
 
 const ProfileSettings = () => {
     const navigate = useNavigate();
@@ -66,16 +67,24 @@ const ProfileSettings = () => {
         }));
     };
 
-    const handleSave = () => {
-        localStorage.setItem('user', JSON.stringify(user));
-        setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 3000);
 
-        // Apply theme change
-        if (user.preferences.theme === 'dark') {
-            document.body.setAttribute('data-bs-theme', 'dark');
-        } else {
-            document.body.setAttribute('data-bs-theme', 'light');
+
+    const handleSave = async () => {
+        try {
+            const updatedUser = await authService.updateProfile(user);
+            setUser(prev => ({ ...prev, ...updatedUser }));
+            setShowSuccess(true);
+            setTimeout(() => setShowSuccess(false), 3000);
+
+            // Apply theme change
+            if (user.preferences && user.preferences.theme === 'dark') {
+                document.body.setAttribute('data-bs-theme', 'dark');
+            } else {
+                document.body.setAttribute('data-bs-theme', 'light');
+            }
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            // Optionally set an error state here
         }
     };
 
@@ -235,8 +244,9 @@ const ProfileSettings = () => {
                                     <Row className="g-3">
                                         <Col md={6}>
                                             <Form.Group>
-                                                <Form.Label className="small fw-semibold">Full Name</Form.Label>
+                                                <Form.Label htmlFor="profile-name" className="small fw-semibold">Full Name</Form.Label>
                                                 <Form.Control
+                                                    id="profile-name"
                                                     type="text"
                                                     name="name"
                                                     value={user.name}
@@ -247,8 +257,9 @@ const ProfileSettings = () => {
                                         </Col>
                                         <Col md={6}>
                                             <Form.Group>
-                                                <Form.Label className="small fw-semibold">Email Address</Form.Label>
+                                                <Form.Label htmlFor="profile-email" className="small fw-semibold">Email Address</Form.Label>
                                                 <Form.Control
+                                                    id="profile-email"
                                                     type="email"
                                                     name="email"
                                                     value={user.email}
@@ -259,8 +270,9 @@ const ProfileSettings = () => {
                                         </Col>
                                         <Col md={12}>
                                             <Form.Group>
-                                                <Form.Label className="small fw-semibold">Bio</Form.Label>
+                                                <Form.Label htmlFor="profile-bio" className="small fw-semibold">Bio</Form.Label>
                                                 <Form.Control
+                                                    id="profile-bio"
                                                     as="textarea"
                                                     rows={3}
                                                     name="bio"
@@ -291,9 +303,11 @@ const ProfileSettings = () => {
                                         <Row className="g-3">
                                             <Col md={6}>
                                                 <Form.Group>
-                                                    <Form.Label className="small fw-semibold">New Password</Form.Label>
+                                                    <Form.Label htmlFor="new-password" className="small fw-semibold">New Password</Form.Label>
                                                     <InputGroup>
                                                         <Form.Control
+                                                            id="new-password"
+                                                            name="newPassword"
                                                             type={showPassword ? "text" : "password"}
                                                             value={newPassword}
                                                             onChange={(e) => setNewPassword(e.target.value)}
@@ -312,8 +326,10 @@ const ProfileSettings = () => {
                                             </Col>
                                             <Col md={6}>
                                                 <Form.Group>
-                                                    <Form.Label className="small fw-semibold">Confirm Password</Form.Label>
+                                                    <Form.Label htmlFor="confirm-password" className="small fw-semibold">Confirm Password</Form.Label>
                                                     <Form.Control
+                                                        id="confirm-password"
+                                                        name="confirmPassword"
                                                         type={showPassword ? "text" : "password"}
                                                         value={confirmPassword}
                                                         onChange={(e) => setConfirmPassword(e.target.value)}

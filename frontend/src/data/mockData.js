@@ -1,13 +1,8 @@
-export const NOW = Date.now();
-export const TOMORROW_2_DAYS = new Date(NOW + 2 * 24 * 60 * 60 * 1000).toISOString();
-export const TODAY = new Date(NOW).toISOString();
-export const IN_5_DAYS = new Date(NOW + 5 * 24 * 60 * 60 * 1000).toISOString();
-export const YESTERDAY = new Date(NOW - 1 * 24 * 60 * 60 * 1000).toISOString();
+// Utility functions for frontend display
+// Previously contained mock data, now just helpers
 
-export const SAMPLE_TASKS = [];
 
 export const getPriorityColor = (priority) => {
-    // Mapping to Bootstrap badge variants
     const map = {
         'high': 'danger',    // Red
         'medium': 'primary', // Blue
@@ -17,7 +12,6 @@ export const getPriorityColor = (priority) => {
 };
 
 export const getCategoryColor = (category) => {
-    // Mapping to Bootstrap badge variants or custom classes
     const map = {
         'work': 'info',
         'personal': 'success',
@@ -27,6 +21,8 @@ export const getCategoryColor = (category) => {
 };
 
 export const formatDate = (date) => {
+    if (!date) return '';
     const d = new Date(date);
+    if (isNaN(d.getTime())) return '';
     return d.toLocaleString('en-US', { month: 'short', day: 'numeric' });
 };

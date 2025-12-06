@@ -9,6 +9,21 @@ const api = axios.create({
     }
 });
 
+// Add a request interceptor to attach the token
+api.interceptors.request.use(
+    (config) => {
+        const user = localStorage.getItem('user');
+        if (user) {
+            const { token } = JSON.parse(user);
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
 // Tasks API
 export const getTasks = () => api.get('/tasks');
 export const getTask = (id) => api.get(`/tasks/${id}`);

@@ -18,8 +18,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+import habitRoutes from './routes/habitRoutes.js';
+import taskRoutes from './routes/taskRoutes.js';
+
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/habits', habitRoutes);
+app.use('/api/tasks', taskRoutes);
 
 app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'ok', message: 'Server is running' });

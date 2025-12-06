@@ -68,8 +68,9 @@ const TaskForm = ({ onSubmit, onCancel, initialData = null, initialType = 'task'
 
                     {/* Title */}
                     <Form.Group className="mb-3">
-                        <Form.Label>Title</Form.Label>
+                        <Form.Label htmlFor="task-title">Title</Form.Label>
                         <Form.Control
+                            id="task-title"
                             type="text"
                             name="title"
                             value={formData.title}
@@ -80,8 +81,9 @@ const TaskForm = ({ onSubmit, onCancel, initialData = null, initialType = 'task'
 
                     {/* Description */}
                     <Form.Group className="mb-3">
-                        <Form.Label>Description</Form.Label>
+                        <Form.Label htmlFor="task-description">Description</Form.Label>
                         <Form.Control
+                            id="task-description"
                             as="textarea"
                             name="description"
                             value={formData.description}
@@ -94,8 +96,9 @@ const TaskForm = ({ onSubmit, onCancel, initialData = null, initialType = 'task'
                     <Row>
                         <Col sm={6}>
                             <Form.Group className="mb-3">
-                                <Form.Label>Category</Form.Label>
+                                <Form.Label htmlFor="task-category">Category</Form.Label>
                                 <Form.Select
+                                    id="task-category"
                                     name="category"
                                     value={formData.category}
                                     onChange={handleChange}
@@ -110,8 +113,9 @@ const TaskForm = ({ onSubmit, onCancel, initialData = null, initialType = 'task'
                         <Col sm={6}>
                             {itemType === 'task' ? (
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Priority</Form.Label>
+                                    <Form.Label htmlFor="task-priority">Priority</Form.Label>
                                     <Form.Select
+                                        id="task-priority"
                                         name="priority"
                                         value={formData.priority}
                                         onChange={handleChange}
@@ -123,8 +127,9 @@ const TaskForm = ({ onSubmit, onCancel, initialData = null, initialType = 'task'
                                 </Form.Group>
                             ) : (
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Frequency</Form.Label>
+                                    <Form.Label htmlFor="task-frequency">Frequency</Form.Label>
                                     <Form.Select
+                                        id="task-frequency"
                                         name="frequency"
                                         value={formData.frequency}
                                         onChange={handleChange}
@@ -140,9 +145,10 @@ const TaskForm = ({ onSubmit, onCancel, initialData = null, initialType = 'task'
 
                     {itemType === 'task' && (
                         <Form.Group className="mb-3">
-                            <Form.Label>Due Date</Form.Label>
+                            <Form.Label htmlFor="task-dueDate">Due Date</Form.Label>
                             <div className="position-relative">
                                 <Form.Control
+                                    id="task-dueDate"
                                     type="date"
                                     name="dueDate"
                                     value={formData.dueDate}
