@@ -26,6 +26,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/habits', habitRoutes);
 app.use('/api/tasks', taskRoutes);
 
+import { errorHandler } from './middleware/errorMiddleware.js';
+app.use(errorHandler);
+
 app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'ok', message: 'Server is running' });
 });
